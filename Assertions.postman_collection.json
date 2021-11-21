@@ -1,0 +1,296 @@
+{
+	"info": {
+		"_postman_id": "776607e8-f132-4ff1-9db2-a89974cacdb3",
+		"name": "Assertions",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Assertion learning",
+			"item": [
+				{
+					"name": "Assertion on Arrays",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let response = pm.response.json();\r",
+									"let result ;\r",
+									"\r",
+									"for ( let filter of response.filters){\r",
+									"    console.log(filter);\r",
+									"\tif ( filter.name == \"MANUFACTURER\"){\r",
+									"\t   result = filter;\r",
+									"\t}\r",
+									"}\r",
+									"\r",
+									"//validate\r",
+									"pm.test(\"Verify name exists\", function(){\r",
+									"    //pm.expect(result.name == \"MANUFACTURER\");\r",
+									"    pm.expect(result.name).to.eql(\"MANUFACTURER\");\r",
+									"    pm.expect(result.isAllowed).to.false;\r",
+									"    \r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"companyId\": 10101,\r\n    \"regionId\": 36554,\r\n    \"filters\": [\r\n        {\r\n            \"id\": 101,\r\n            \"name\": \"VENDOR\",\r\n            \"isAllowed\": false\r\n        },\r\n        {\r\n            \"id\": 102,\r\n            \"name\": \"COUNTRY\",\r\n            \"isAllowed\": true\r\n        },\r\n        {\r\n            \"id\": 103,\r\n            \"name\": \"MANUFACTURER\",\r\n            \"isAllowed\": false\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://owjyirauhv.api.quickmocker.com/v5",
+							"protocol": "https",
+							"host": [
+								"owjyirauhv",
+								"api",
+								"quickmocker",
+								"com"
+							],
+							"path": [
+								"v5"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Assertion on nested objects",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let response= pm.response.json();\r",
+									"let expected = response.prefs.voting;\r",
+									"\r",
+									"//type of\r",
+									"console.log(typeof expected);\r",
+									"console.log(typeof response.prefs);\r",
+									"\r",
+									"console.log(expected);\r",
+									"console.log(typeof expected);\r",
+									"console.log(typeof response.prefs);\r",
+									"\r",
+									"// check value of voting is disabled\r",
+									"pm.test(\"check value of voting\", function(){\r",
+									"    pm.expect(expected).eql(\"disabled\");\r",
+									"})\r",
+									"\r",
+									"// check value of voting is disabled\r",
+									"pm.test(\"check value of voting\", function(){\r",
+									"    pm.expect(expected).eql(\"disabled\");\r",
+									"})\r",
+									"\r",
+									"\r",
+									"// second example -- generic key \r",
+									"//let result = response.limits.54bba24af6196bd5f824e563  -- error\r",
+									"\r",
+									"// static way of checking\r",
+									"let result = response.limits['54bba24af6196bd5f824e563'].boards.totalPerMember.status;\r",
+									"console.log(result);\r",
+									"\r",
+									"// check value of status is ok\r",
+									"pm.test(\"check value of status\", function(){\r",
+									"    pm.expect(result).eql(\"ok\");\r",
+									"})\r",
+									"\r",
+									"//if the response key will not be static; we shud generalise\r",
+									"\r",
+									"for ( let key in response.limits){\r",
+									"    console.log(key, response.limits[key]);\r",
+									"\r",
+									"    if (response.limits[key].hasOwnProperty('boards')){\r",
+									"        f_result = response.limits[key].boards.totalPerMember.status\r",
+									"    }\r",
+									"}\r",
+									"\r",
+									"pm.test(\"check value of status -dyn\", function(){\r",
+									"    pm.expect(f_result).eql(\"ok\");\r",
+									"})\r",
+									"\r",
+									"\r",
+									"\r",
+									"\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": \"5ab34c7b0ba0f8932222352c\",\r\n\t\"name\": \"My board 7\",\r\n\t\"prefs\": {\r\n\t\t\"permissionLevel\": \"private\",\r\n\t\t\"voting\": \"disabled\",\r\n\t\t\"comments\": {\r\n\t\t\t\"status\": \"disabled\",\r\n\t\t\t\"count\": 0\r\n\t\t}\r\n\t},\r\n\t\"limits\": {\r\n\t\t\"54bba24af6196bd5f824e563\": {\r\n\t\t\t\"boards\": {\r\n\t\t\t\t\"totalPerMember\": {\r\n\t\t\t\t\t\"count\": 1,\r\n\t\t\t\t\t\"status\": \"ok\",\r\n\t\t\t\t\t\"disableAt\": 56050,\r\n\t\t\t\t\t\"warnAt\": 53100\r\n\t\t\t\t}\r\n\t\t\t}\r\n\t\t}\r\n\t}\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://owjyirauhv.api.quickmocker.com/v1",
+							"protocol": "https",
+							"host": [
+								"owjyirauhv",
+								"api",
+								"quickmocker",
+								"com"
+							],
+							"path": [
+								"v1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Validate headers from response",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let header =pm.response.headers.get('X-cache');\r",
+									"console.log(header);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "https://owjyirauhv.api.quickmocker.com/v5",
+							"protocol": "https",
+							"host": [
+								"owjyirauhv",
+								"api",
+								"quickmocker",
+								"com"
+							],
+							"path": [
+								"v5"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Basics",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"test match\", function () {\r",
+									"    pm.expect(\"100\").to.eql(\"100\", \"string match\");\r",
+									"    pm.expect(100).to.eql(100, \"number match\");\r",
+									"})\r",
+									"\r",
+									"//object\r",
+									"pm.test(\"test match\", function () {\r",
+									"    let a = {\"name\":\"mickey\", \"age\" : \"10\"};\r",
+									"    let b = {\"name\":\"mickey\", \"age\" : \"10\"};\r",
+									"\r",
+									"    pm.expect(a).to.eql(b);\r",
+									"})\r",
+									"\r",
+									"//object fail\r",
+									"pm.test(\"test match\", function () {\r",
+									"    let a = {\"name\":\"mickey\", \"age\" : \"10\"};\r",
+									"    let b = {\"name\":\"donald\", \"age\" : \"20\"};\r",
+									"\r",
+									"    pm.expect(a).to.eql(b);\r",
+									"})\r",
+									"\r",
+									"//object pass\r",
+									"pm.test(\"test match using not equal\", function () {\r",
+									"    let a = {\"name\":\"mickey\", \"age\" : \"10\"};\r",
+									"    let b = {\"name\":\"donald\", \"age\" : \"20\"};\r",
+									"\r",
+									"    pm.expect(a).to.not.eql(b);\r",
+									"})\r",
+									"\r",
+									"\r",
+									"//object fail ; as references as compares with \"equal\"\r",
+									"pm.test(\"test match\", function () {\r",
+									"    let a = {\"name\":\"mickey\", \"age\" : \"10\"};\r",
+									"    let b = {\"name\":\"mickey\", \"age\" : \"10\"};\r",
+									"\r",
+									"    pm.expect(a).to.equal(b);\r",
+									"})\r",
+									"\r",
+									"// logical operations\r",
+									"pm.test(\"true or false\", function(){\r",
+									"    //pm.expect(true).to.eql(true);\r",
+									"    pm.expect(true).to.be.true;\r",
+									"})\r",
+									"\r",
+									"// null operations\r",
+									"pm.test(\"null or undefined\", function(){\r",
+									"    //pm.expect(null).to.eql(undefined);\r",
+									"    pm.expect(null).to.be.undefined;\r",
+									"})\r",
+									"\r",
+									"//undefined pass\r",
+									"pm.test(\"null or undefined\", function(){\r",
+									"    pm.expect(undefined).to.be.undefined;\r",
+									"})\r",
+									"\r",
+									"//array empty\r",
+									"pm.test(\"array empty\", function(){\r",
+									"    pm.expect([]).to.be.empty;\r",
+									"    pm.expect([].length).to.be.eql(0);\r",
+									"    \r",
+									"})\r",
+									"\r",
+									"//other array - include, to be oneOf\r",
+									"pm.test(\"array check\", function(){\r",
+									"    pm.expect([1,2,3,4]).to.include(4);\r",
+									"    pm.expect(3).to.be.oneOf([1,2,3,5]);\r",
+									"   \r",
+									"})\r",
+									"\r",
+									"//regex\r",
+									"pm.test(\"regex check\", function(){\r",
+									"    pm.expect(\"John Doe\").to.match(/^John/);\r",
+									"})\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "example.com",
+							"host": [
+								"example",
+								"com"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
